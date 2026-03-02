@@ -1,5 +1,5 @@
 {
-  "name": "Surprise Moments Creator",
+  "name": "Surprise Creator",
   "description": "Create and share personalized, animated surprise websites for any occasion - birthdays, anniversaries, Valentine's Day, and more.",
   "requestFramePermissions": [
     "microphone"

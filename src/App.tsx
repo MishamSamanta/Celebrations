@@ -4,13 +4,17 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Gift, Sparkles, Share2, Copy, Check, ExternalLink, ArrowRight } from 'lucide-react';
 import CreatorDashboard from './components/CreatorDashboard';
 import SurpriseView from './components/SurpriseView';
+import Navbar from './components/Navbar';
+import PremiumService from './components/PremiumService';
+import PremiumSuccess from './components/PremiumSuccess';
 import { SurpriseData } from './types';
 import { cn } from './lib/utils';
+import LightRays from './components/LightRays';
 
 function Home() {
   const navigate = useNavigate();
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">
+    <div className="min-h-screen flex flex-col items-center justify-center p-6 pt-24 text-center relative overflow-hidden">
       {/* Background elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand/20 blur-[120px] rounded-full" />
@@ -38,18 +42,24 @@ function Home() {
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
-          <button
+          <motion.button
+            whileHover={{ scale: 1.05, y: -4 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => navigate('/create')}
-            className="btn-primary flex items-center gap-2 text-lg px-8 py-4 w-full sm:w-auto"
+            className="btn-primary flex items-center gap-2 text-lg px-8 py-4 w-full sm:w-auto shadow-xl shadow-brand/20"
           >
             Start Creating
             <ArrowRight size={20} />
-          </button>
-          <button
-            className="btn-secondary flex items-center gap-2 text-lg px-8 py-4 w-full sm:w-auto"
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.05, y: -4 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => navigate('/premium')}
+            className="btn-secondary flex items-center gap-2 text-lg px-8 py-4 w-full sm:w-auto border-brand/20 text-brand"
           >
-            View Examples
-          </button>
+            Get Expert Build
+            <Sparkles size={20} />
+          </motion.button>
         </div>
 
         <div className="pt-20 grid grid-cols-3 gap-8 opacity-40 grayscale hover:grayscale-0 transition-all duration-500">
@@ -105,7 +115,7 @@ function CreatePage() {
 
   if (generatedId) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6">
+      <div className="min-h-screen flex items-center justify-center p-6 pt-24">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -130,19 +140,23 @@ function CreatePage() {
               </button>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <button
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => window.open(shareUrl, '_blank')}
                 className="btn-secondary flex items-center justify-center gap-2"
               >
                 Preview
                 <ExternalLink size={18} />
-              </button>
-              <button
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => navigate('/')}
                 className="btn-primary"
               >
                 Done
-              </button>
+              </motion.button>
             </div>
           </div>
         </motion.div>
@@ -151,7 +165,7 @@ function CreatePage() {
   }
 
   return (
-    <div className="relative">
+    <div className="relative pt-24">
       {isGenerating && (
         <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center gap-6">
           <motion.div
@@ -218,12 +232,34 @@ function SurprisePage() {
 export default function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-[#050505] text-white">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/create" element={<CreatePage />} />
-          <Route path="/surprise/:id" element={<SurprisePage />} />
-        </Routes>
+      <div className="min-h-screen bg-[#050505] text-white relative bg-[radial-gradient(circle_at_50%_-20%,rgba(168,85,247,0.15),transparent_70%)]">
+        <div className="fixed inset-0 pointer-events-none z-0 opacity-40">
+          <LightRays
+            raysOrigin="top-center"
+            raysColor="#a855f7"
+            raysSpeed={0.6}
+            lightSpread={0.8}
+            rayLength={1.5}
+            followMouse={true}
+            mouseInfluence={0.2}
+            noiseAmount={0.05}
+            distortion={0.1}
+            className="custom-rays"
+            pulsating={true}
+            fadeDistance={1.2}
+            saturation={1.2}
+          />
+        </div>
+        <Navbar />
+        <div className="relative z-10">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/create" element={<CreatePage />} />
+            <Route path="/surprise/:id" element={<SurprisePage />} />
+            <Route path="/premium" element={<PremiumService />} />
+            <Route path="/premium/success" element={<PremiumSuccess />} />
+          </Routes>
+        </div>
       </div>
     </Router>
   );

@@ -4,6 +4,12 @@ import Database from "better-sqlite3";
 import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
+import Stripe from "stripe";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -32,7 +38,18 @@ db.exec(`
     one_time_reveal INTEGER DEFAULT 0,
     view_count INTEGER DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-  )
+  );
+
+  CREATE TABLE IF NOT EXISTS premium_requests (
+    id TEXT PRIMARY KEY,
+    user_email TEXT,
+    suggestions TEXT,
+    deadline TEXT,
+    status TEXT DEFAULT 'pending',
+    payment_status TEXT DEFAULT 'unpaid',
+    stripe_session_id TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
 `);
 
 async function startServer() {
@@ -41,7 +58,71 @@ async function startServer() {
 
   app.use(express.json({ limit: '50mb' }));
 
+  // Stripe Checkout
+  app.post("/api/create-checkout-session", async (req, res) => {
+    if (!stripe) {
+      return res.status(500).json({ error: "Stripe is not configured" });
+    }
+
+    const { email } = req.body;
+    const appUrl = process.env.APP_URL || `http://localhost:${PORT}`;
+
+    try {
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        line_items: [
+          {
+            price_data: {
+              currency: "usd",
+              product_data: {
+                name: "Premium Custom Surprise Website",
+                description: "A fully custom, professionally built surprise website with your specific requirements and deadline.",
+              },
+              unit_amount: 4900, // $49.00
+            },
+            quantity: 1,
+          },
+        ],
+        mode: "payment",
+        success_url: `${appUrl}/premium/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${appUrl}/premium`,
+        customer_email: email,
+      });
+
+      res.json({ id: session.id });
+    } catch (error) {
+      console.error("Stripe error:", error);
+      res.status(500).json({ error: "Failed to create checkout session" });
+    }
+  });
+
+  // Save Premium Request
+  app.post("/api/premium-requests", (req, res) => {
+    const { sessionId, suggestions, deadline, email } = req.body;
+
+    try {
+      const stmt = db.prepare(`
+        INSERT INTO premium_requests (id, user_email, suggestions, deadline, payment_status, stripe_session_id)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `);
+
+      const id = Math.random().toString(36).substring(2, 15);
+      stmt.run(id, email, suggestions, deadline, 'paid', sessionId);
+
+      res.json({ success: true, id });
+    } catch (error) {
+      console.error("Error saving premium request:", error);
+      res.status(500).json({ error: "Failed to save request" });
+    }
+  });
+
   // API Routes
+  app.get("/api/config", (req, res) => {
+    res.json({
+      publishableKey: process.env.STRIPE_PUBLISHABLE_KEY || process.env.VITE_STRIPE_PUBLISHABLE_KEY || ""
+    });
+  });
+
   app.post("/api/surprises", (req, res) => {
     const {
       id, senderName, receiverName, relationship, occasion, message, memories,

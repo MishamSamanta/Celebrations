@@ -14,7 +14,7 @@ function Home() {
       {/* Background elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand/20 blur-[120px] rounded-full" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-orange-600/10 blur-[120px] rounded-full" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/10 blur-[120px] rounded-full" />
       </div>
 
       <motion.div
@@ -24,10 +24,10 @@ function Home() {
       >
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-white/60 mb-4">
           <Sparkles size={16} className="text-brand" />
-          <span className="text-sm font-medium">The Ultimate Birthday Experience</span>
+          <span className="text-sm font-medium">The Ultimate Surprise Experience</span>
         </div>
         
-        <h1 className="text-7xl md:text-8xl font-display font-bold tracking-tight">
+        <h1 className="text-7xl md:text-8xl font-display font-bold tracking-tight text-white">
           Celebrate Every <br />
           <span className="text-gradient">Moment.</span>
         </h1>
@@ -115,8 +115,8 @@ function CreatePage() {
             <Check className="text-green-500" size={40} />
           </div>
           <div className="space-y-2">
-            <h2 className="text-3xl font-display font-bold">Surprise Created!</h2>
-            <p className="text-white/60">Your personalized birthday surprise is ready to be shared.</p>
+            <h2 className="text-3xl font-display font-bold text-white">Surprise Created!</h2>
+            <p className="text-white/60">Your personalized surprise is ready to be shared.</p>
           </div>
 
           <div className="space-y-4">

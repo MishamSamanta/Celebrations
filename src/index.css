@@ -6,8 +6,8 @@
   --font-display: "Space Grotesk", sans-serif;
   --font-serif: "Playfair Display", serif;
   
-  --color-brand: #F27D26;
-  --color-brand-dark: #D66A1E;
+  --color-brand: #D946EF;
+  --color-brand-dark: #C026D3;
 }
 
 @layer base {
@@ -30,12 +30,16 @@
   }
 
   .input-field {
-    @apply bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand/50 focus:border-brand transition-all w-full placeholder:text-white/30;
+    @apply bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand/50 focus:border-brand focus:bg-white/10 transition-all w-full placeholder:text-white/30 text-white;
+  }
+
+  select.input-field option {
+    @apply bg-[#1A1A1A] text-white;
   }
 }
 
 .text-gradient {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-brand to-orange-400;
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-brand to-purple-400;
 }
 
 /* Custom animations */

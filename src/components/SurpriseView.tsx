@@ -36,7 +36,7 @@ export default function SurpriseView({ data }: SurpriseViewProps) {
       particleCount: 150,
       spread: 70,
       origin: { y: 0.6 },
-      colors: ['#F27D26', '#ffffff', '#FFD700']
+      colors: ['#D946EF', '#ffffff', '#A855F7']
     });
     if (audioRef.current) {
       audioRef.current.play();
@@ -52,7 +52,7 @@ export default function SurpriseView({ data }: SurpriseViewProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-[#050505] overflow-y-auto overflow-x-hidden">
+    <div className="fixed inset-0 bg-[#050505] overflow-y-auto overflow-x-hidden text-white">
       <audio ref={audioRef} src={data.music} loop />
       
       <AnimatePresence mode="wait">
@@ -114,7 +114,7 @@ export default function SurpriseView({ data }: SurpriseViewProps) {
               <div className="relative glass-card p-12 flex flex-col items-center gap-6 border-brand/30">
                 <Gift size={80} className="text-brand animate-float" />
                 <div className="text-center">
-                  <h3 className="text-2xl font-display font-bold mb-2">You have a surprise!</h3>
+                  <h3 className="text-2xl font-display font-bold mb-2 text-white">You have a surprise!</h3>
                   <p className="text-white/60">Click to open your gift</p>
                 </div>
               </div>
@@ -144,7 +144,7 @@ export default function SurpriseView({ data }: SurpriseViewProps) {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                 >
-                  <h1 className="text-6xl md:text-8xl font-display font-bold mb-4">
+                  <h1 className="text-6xl md:text-8xl font-display font-bold mb-4 text-white">
                     {data.occasion === 'birthday' ? 'Happy Birthday,' : 
                      data.occasion === 'anniversary' ? 'Happy Anniversary,' :
                      data.occasion === 'valentine' ? 'Happy Valentine\'s,' :
@@ -204,7 +204,7 @@ export default function SurpriseView({ data }: SurpriseViewProps) {
                     "{data.message}"
                   </p>
                   <div className="pt-8 border-t border-white/10">
-                    <h4 className="text-lg font-display font-bold mb-4">Our Memories</h4>
+                    <h4 className="text-lg font-display font-bold mb-4 text-white">Our Memories</h4>
                     <p className="text-white/60 leading-relaxed text-lg">
                       {data.memories}
                     </p>
@@ -220,7 +220,7 @@ export default function SurpriseView({ data }: SurpriseViewProps) {
                   viewport={{ once: true }}
                   className="space-y-6"
                 >
-                  <h2 className="text-4xl md:text-6xl font-display font-bold">
+                  <h2 className="text-4xl md:text-6xl font-display font-bold text-white">
                     {data.finalWish}
                   </h2>
                   <div className="flex justify-center gap-4">
@@ -234,7 +234,7 @@ export default function SurpriseView({ data }: SurpriseViewProps) {
                 </motion.div>
                 
                 <div className="pt-20">
-                  <p className="text-white/20 text-sm uppercase tracking-widest">Created with Birthday Surprise Creator</p>
+                  <p className="text-white/20 text-sm uppercase tracking-widest">Created with Surprise Moments Creator</p>
                 </div>
               </section>
             </div>

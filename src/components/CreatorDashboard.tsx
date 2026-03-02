@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Plus, Image as ImageIcon, Music, Send, Sparkles, Trash2, Eye, Save, ChevronRight, ChevronLeft, Cake, Heart, Flame, GraduationCap, TrendingUp, Star } from 'lucide-react';
+import { Plus, Image as ImageIcon, Music, Send, Sparkles, Trash2, Eye, Save, ChevronRight, ChevronLeft, ChevronDown, Cake, Heart, Flame, GraduationCap, TrendingUp, Star } from 'lucide-react';
 import { SurpriseData, THEMES, MUSIC_OPTIONS, OCCASIONS } from '../types';
 import { generateId, cn } from '../lib/utils';
 
@@ -95,8 +95,8 @@ export default function CreatorDashboard({ onGenerate }: CreatorDashboardProps) 
             <Sparkles size={16} />
             <span className="text-sm font-medium uppercase tracking-wider">Creator Platform</span>
           </motion.div>
-          <h1 className="text-5xl md:text-6xl font-display font-bold mb-4">
-            Create a <span className="text-gradient">Birthday Surprise</span>
+          <h1 className="text-5xl md:text-6xl font-display font-bold mb-4 text-white">
+            Create a <span className="text-gradient">Surprise Moment</span>
           </h1>
           <p className="text-white/60 text-lg max-w-2xl mx-auto">
             Design a personalized, animated experience that tells your story and celebrates their special day.
@@ -195,20 +195,25 @@ export default function CreatorDashboard({ onGenerate }: CreatorDashboardProps) 
                         onChange={(e) => updateField('senderName', e.target.value)}
                       />
                     </div>
-                    <div>
+                    <div className="relative">
                       <label className="block text-sm font-medium text-white/60 mb-2 uppercase tracking-wider">Relationship</label>
-                      <select
-                        className="input-field appearance-none"
-                        value={formData.relationship || ''}
-                        onChange={(e) => updateField('relationship', e.target.value)}
-                      >
-                        <option value="">Select relationship</option>
-                        <option value="Friend">Friend</option>
-                        <option value="Partner">Partner</option>
-                        <option value="Family">Family</option>
-                        <option value="Colleague">Colleague</option>
-                        <option value="Other">Other</option>
-                      </select>
+                      <div className="relative">
+                        <select
+                          className="input-field appearance-none pr-10 cursor-pointer"
+                          value={formData.relationship || ''}
+                          onChange={(e) => updateField('relationship', e.target.value)}
+                        >
+                          <option value="" className="bg-[#1A1A1A]">Select relationship</option>
+                          <option value="Friend" className="bg-[#1A1A1A]">Friend</option>
+                          <option value="Partner" className="bg-[#1A1A1A]">Partner</option>
+                          <option value="Family" className="bg-[#1A1A1A]">Family</option>
+                          <option value="Colleague" className="bg-[#1A1A1A]">Colleague</option>
+                          <option value="Other" className="bg-[#1A1A1A]">Other</option>
+                        </select>
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/40">
+                          <ChevronDown size={18} />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -216,7 +221,7 @@ export default function CreatorDashboard({ onGenerate }: CreatorDashboardProps) 
 
               {step === 2 && (
                 <div className="space-y-6">
-                  <h2 className="text-2xl font-display font-bold mb-6">The Story</h2>
+                  <h2 className="text-2xl font-display font-bold mb-6 text-white">The Story</h2>
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-white/60 mb-2 uppercase tracking-wider">Opening Text</label>
@@ -254,7 +259,7 @@ export default function CreatorDashboard({ onGenerate }: CreatorDashboardProps) 
 
               {step === 3 && (
                 <div className="space-y-6">
-                  <h2 className="text-2xl font-display font-bold mb-6">Media & Music</h2>
+                  <h2 className="text-2xl font-display font-bold mb-6 text-white">Media & Music</h2>
                   <div className="space-y-6">
                     <div>
                       <label className="block text-sm font-medium text-white/60 mb-4 uppercase tracking-wider">Photos</label>
@@ -291,7 +296,7 @@ export default function CreatorDashboard({ onGenerate }: CreatorDashboardProps) 
                           >
                             <div className="flex items-center gap-3">
                               <Music size={18} className={formData.music === m.url ? "text-brand" : "text-white/40"} />
-                              <span className="text-sm">{m.name}</span>
+                              <span className="text-sm text-white">{m.name}</span>
                             </div>
                             {formData.music === m.url && <div className="w-2 h-2 rounded-full bg-brand" />}
                           </button>
@@ -304,7 +309,7 @@ export default function CreatorDashboard({ onGenerate }: CreatorDashboardProps) 
 
               {step === 4 && (
                 <div className="space-y-6">
-                  <h2 className="text-2xl font-display font-bold mb-6">Final Touches</h2>
+                  <h2 className="text-2xl font-display font-bold mb-6 text-white">Final Touches</h2>
                   <div className="space-y-6">
                     <div>
                       <label className="block text-sm font-medium text-white/60 mb-4 uppercase tracking-wider">Animation Theme</label>
@@ -319,7 +324,7 @@ export default function CreatorDashboard({ onGenerate }: CreatorDashboardProps) 
                             )}
                           >
                             <div className="w-full h-2 rounded-full mb-3" style={{ backgroundColor: t.primary }} />
-                            <div className="text-sm font-medium">{t.name}</div>
+                            <div className="text-sm font-medium text-white">{t.name}</div>
                           </button>
                         ))}
                       </div>
@@ -336,7 +341,7 @@ export default function CreatorDashboard({ onGenerate }: CreatorDashboardProps) 
                     </div>
                     <div className="flex items-center justify-between p-4 glass-card">
                       <div>
-                        <div className="font-medium">One-time Reveal Mode</div>
+                        <div className="font-medium text-white">One-time Reveal Mode</div>
                         <div className="text-xs text-white/40">The surprise can only be opened once.</div>
                       </div>
                       <button

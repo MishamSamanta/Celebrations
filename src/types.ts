@@ -29,10 +29,10 @@ export const OCCASIONS = [
 ];
 
 export const THEMES = [
-  { id: 'classic', name: 'Classic Celebration', primary: '#F27D26' },
-  { id: 'romantic', name: 'Romantic Glow', primary: '#FF4D4D' },
-  { id: 'elegant', name: 'Elegant Gold', primary: '#D4AF37' },
-  { id: 'vibrant', name: 'Vibrant Party', primary: '#00FF00' },
+  { id: 'classic', name: 'Royal Purple', primary: '#D946EF' },
+  { id: 'romantic', name: 'Romantic Glow', primary: '#EC4899' },
+  { id: 'elegant', name: 'Deep Violet', primary: '#8B5CF6' },
+  { id: 'vibrant', name: 'Soft Orchid', primary: '#C084FC' },
 ];
 
 export const MUSIC_OPTIONS = [

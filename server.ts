@@ -9,7 +9,13 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
+const getStripe = () => {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key || key === "1") {
+    return null;
+  }
+  return new Stripe(key);
+};
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -60,8 +66,9 @@ async function startServer() {
 
   // Stripe Checkout
   app.post("/api/create-checkout-session", async (req, res) => {
+    const stripe = getStripe();
     if (!stripe) {
-      return res.status(500).json({ error: "Stripe is not configured" });
+      return res.status(500).json({ error: "Stripe is not configured. Please set a valid STRIPE_SECRET_KEY in environment variables." });
     }
 
     const { email } = req.body;

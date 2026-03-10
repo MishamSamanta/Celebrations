@@ -16,6 +16,7 @@ interface CreatorDashboardProps {
 export default function CreatorDashboard({ onGenerate }: CreatorDashboardProps) {
   const [step, setStep] = useState(1);
   const [isEnhancing, setIsEnhancing] = useState(false);
+  const [vibe, setVibe] = useState<'heartfelt' | 'poetic' | 'funny' | 'minimalist'>('heartfelt');
   const [formData, setFormData] = useState<Partial<SurpriseData>>({
     theme: 'classic',
     music: MUSIC_OPTIONS[0].url,
@@ -98,14 +99,35 @@ export default function CreatorDashboard({ onGenerate }: CreatorDashboardProps) 
       const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
       const occasion = OCCASIONS.find(o => o.id === formData.occasion)?.name || 'special occasion';
       
-      const prompt = `You are an expert emotional writer. Enhance the following message for a ${occasion} surprise website. 
-      The message is from ${formData.senderName || 'someone'} to ${formData.receiverName || 'someone special'}.
-      Make it more heartfelt, poetic, and memorable, but keep the original intent. 
-      Keep it under 100 words.
+      const vibePrompts = {
+        heartfelt: "warm, sincere, and deeply emotional. Focus on the bond and genuine appreciation.",
+        poetic: "lyrical, metaphorical, and elegant. Use beautiful imagery and rhythmic language.",
+        funny: "lighthearted, witty, and playful. Include a touch of humor while staying sweet.",
+        minimalist: "short, punchy, and modern. Every word should carry weight and impact."
+      };
+
+      const prompt = `You are a world-class creative writer specializing in emotional storytelling. 
+      Your task is to transform a simple message into an extraordinary piece of writing for a digital surprise website.
       
-      Original Message: "${formData.message}"
+      CONTEXT:
+      - Occasion: ${occasion}
+      - From: ${formData.senderName || 'Sender'}
+      - To: ${formData.receiverName || 'Receiver'}
+      - Relationship: ${formData.relationship || 'Close'}
+      - Desired Vibe: ${vibePrompts[vibe]}
       
-      Enhanced Message:`;
+      ORIGINAL MESSAGE:
+      "${formData.message}"
+      
+      REQUIREMENTS:
+      1. Maintain the core meaning and any specific details from the original message.
+      2. Elevate the vocabulary and sentence structure.
+      3. Ensure the tone matches the requested vibe perfectly.
+      4. Keep the length between 40 and 120 words.
+      5. Do not use generic clichés; make it feel unique and personal.
+      6. Output ONLY the enhanced message text.
+      
+      ENHANCED MESSAGE:`;
 
       const response = await ai.models.generateContent({
         model: "gemini-2.0-flash-exp",
@@ -114,7 +136,7 @@ export default function CreatorDashboard({ onGenerate }: CreatorDashboardProps) 
 
       const enhancedText = response.text;
       if (enhancedText) {
-        updateField('message', enhancedText.trim());
+        updateField('message', enhancedText.trim().replace(/^"|"$/g, ''));
       }
     } catch (error) {
       console.error("Enhancement failed:", error);
@@ -332,30 +354,74 @@ export default function CreatorDashboard({ onGenerate }: CreatorDashboardProps) 
                       />
                     </div>
                     <div className="space-y-3">
-                      <div className="flex items-center justify-between">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <label className="text-[10px] font-display font-bold text-white/30 uppercase tracking-[0.3em]">The Message</label>
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={enhanceMessage}
-                          disabled={isEnhancing || !formData.message}
-                          className="flex items-center gap-2 text-[10px] font-display font-bold uppercase tracking-wider text-brand hover:text-brand-dark transition-colors disabled:opacity-50"
-                        >
-                          {isEnhancing ? (
-                            <Loader2 size={14} className="animate-spin" />
-                          ) : (
-                            <Wand2 size={14} />
-                          )}
-                          Magic Enhance
-                        </motion.button>
+                        <div className="flex items-center gap-2 bg-white/5 p-1 rounded-xl border border-white/10">
+                          {(['heartfelt', 'poetic', 'funny', 'minimalist'] as const).map((v) => (
+                            <button
+                              key={v}
+                              onClick={() => setVibe(v)}
+                              className={cn(
+                                "px-3 py-1 text-[10px] font-display font-bold uppercase tracking-wider rounded-lg transition-all",
+                                vibe === v ? "bg-brand text-white shadow-lg shadow-brand/20" : "text-white/30 hover:text-white/60"
+                              )}
+                            >
+                              {v}
+                            </button>
+                          ))}
+                          <div className="w-[1px] h-4 bg-white/10 mx-1" />
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={enhanceMessage}
+                            disabled={isEnhancing || !formData.message}
+                            className="flex items-center gap-2 px-3 py-1 text-[10px] font-display font-bold uppercase tracking-wider text-brand hover:text-brand-dark transition-colors disabled:opacity-50"
+                          >
+                            {isEnhancing ? (
+                              <Loader2 size={14} className="animate-spin" />
+                            ) : (
+                              <Wand2 size={14} />
+                            )}
+                            Magic Enhance
+                          </motion.button>
+                        </div>
                       </div>
-                      <textarea
-                        rows={6}
-                        placeholder="Write something heartfelt..."
-                        className="input-field !rounded-3xl !bg-white/[0.02] border-white/5 focus:border-brand/30 resize-none font-serif italic text-xl"
-                        value={formData.message || ''}
-                        onChange={(e) => updateField('message', e.target.value)}
-                      />
+                      <div className="relative group">
+                        <textarea
+                          rows={6}
+                          placeholder="Write something heartfelt..."
+                          className={cn(
+                            "input-field !rounded-3xl !bg-white/[0.02] border-white/5 focus:border-brand/30 resize-none font-serif italic text-xl transition-all duration-500",
+                            isEnhancing && "opacity-50 blur-[2px]"
+                          )}
+                          value={formData.message || ''}
+                          onChange={(e) => updateField('message', e.target.value)}
+                        />
+                        <AnimatePresence>
+                          {isEnhancing && (
+                            <motion.div
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              exit={{ opacity: 0 }}
+                              className="absolute inset-0 flex items-center justify-center"
+                            >
+                              <div className="flex flex-col items-center gap-3">
+                                <div className="flex gap-1">
+                                  {[0, 1, 2].map((i) => (
+                                    <motion.div
+                                      key={i}
+                                      animate={{ y: [0, -10, 0] }}
+                                      transition={{ repeat: Infinity, duration: 0.6, delay: i * 0.1 }}
+                                      className="w-2 h-2 bg-brand rounded-full"
+                                    />
+                                  ))}
+                                </div>
+                                <span className="text-[10px] font-display font-bold uppercase tracking-[0.2em] text-brand">Weaving Magic...</span>
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
                     </div>
                     <div className="space-y-3">
                       <label className="text-[10px] font-display font-bold text-white/30 uppercase tracking-[0.3em]">Shared Memories</label>

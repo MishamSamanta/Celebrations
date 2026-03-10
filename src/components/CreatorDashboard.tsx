@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Plus, Image as ImageIcon, Music, Send, Sparkles, Trash2, Eye, Save, ChevronRight, ChevronLeft, ChevronDown, Cake, Heart, Flame, GraduationCap, TrendingUp, Star } from 'lucide-react';
+import { Plus, Image as ImageIcon, Music, Send, Sparkles, Trash2, Eye, Save, ChevronRight, ChevronLeft, ChevronDown, Cake, Heart, Flame, GraduationCap, TrendingUp, Star, Wand2, Loader2 } from 'lucide-react';
 import { SurpriseData, THEMES, MUSIC_OPTIONS, OCCASIONS } from '../types';
 import { generateId, cn } from '../lib/utils';
+import { GoogleGenAI } from "@google/genai";
 
 const ICON_MAP: Record<string, any> = {
   Cake, Heart, Flame, GraduationCap, TrendingUp, Star
@@ -14,6 +15,7 @@ interface CreatorDashboardProps {
 
 export default function CreatorDashboard({ onGenerate }: CreatorDashboardProps) {
   const [step, setStep] = useState(1);
+  const [isEnhancing, setIsEnhancing] = useState(false);
   const [formData, setFormData] = useState<Partial<SurpriseData>>({
     theme: 'classic',
     music: MUSIC_OPTIONS[0].url,
@@ -84,6 +86,43 @@ export default function CreatorDashboard({ onGenerate }: CreatorDashboardProps) 
     setStep(s => Math.min(s + 1, 4));
   };
   const prevStep = () => setStep(s => Math.max(s - 1, 1));
+
+  const enhanceMessage = async () => {
+    if (!formData.message) {
+      alert("Please write a basic message first so I can enhance it!");
+      return;
+    }
+
+    setIsEnhancing(true);
+    try {
+      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
+      const occasion = OCCASIONS.find(o => o.id === formData.occasion)?.name || 'special occasion';
+      
+      const prompt = `You are an expert emotional writer. Enhance the following message for a ${occasion} surprise website. 
+      The message is from ${formData.senderName || 'someone'} to ${formData.receiverName || 'someone special'}.
+      Make it more heartfelt, poetic, and memorable, but keep the original intent. 
+      Keep it under 100 words.
+      
+      Original Message: "${formData.message}"
+      
+      Enhanced Message:`;
+
+      const response = await ai.models.generateContent({
+        model: "gemini-2.0-flash-exp",
+        contents: [{ parts: [{ text: prompt }] }],
+      });
+
+      const enhancedText = response.text;
+      if (enhancedText) {
+        updateField('message', enhancedText.trim());
+      }
+    } catch (error) {
+      console.error("Enhancement failed:", error);
+      alert("Magic enhancement failed. Please try again later.");
+    } finally {
+      setIsEnhancing(false);
+    }
+  };
 
   const handleSubmit = () => {
     if (!formData.receiverName || !formData.senderName || !formData.message) {
@@ -293,7 +332,23 @@ export default function CreatorDashboard({ onGenerate }: CreatorDashboardProps) 
                       />
                     </div>
                     <div className="space-y-3">
-                      <label className="text-[10px] font-display font-bold text-white/30 uppercase tracking-[0.3em]">The Message</label>
+                      <div className="flex items-center justify-between">
+                        <label className="text-[10px] font-display font-bold text-white/30 uppercase tracking-[0.3em]">The Message</label>
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={enhanceMessage}
+                          disabled={isEnhancing || !formData.message}
+                          className="flex items-center gap-2 text-[10px] font-display font-bold uppercase tracking-wider text-brand hover:text-brand-dark transition-colors disabled:opacity-50"
+                        >
+                          {isEnhancing ? (
+                            <Loader2 size={14} className="animate-spin" />
+                          ) : (
+                            <Wand2 size={14} />
+                          )}
+                          Magic Enhance
+                        </motion.button>
+                      </div>
                       <textarea
                         rows={6}
                         placeholder="Write something heartfelt..."

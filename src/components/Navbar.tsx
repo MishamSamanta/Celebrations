@@ -56,6 +56,7 @@ export default function Navbar() {
           {[
             { name: 'Home', path: '/' },
             { name: 'Create', path: '/create' },
+            { name: 'Gift Shop', path: '/shop' },
             { name: 'Premium', path: '/premium' },
             { name: 'My Surprises', path: '#' },
           ].map((link) => (

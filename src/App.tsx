@@ -1,9 +1,10 @@
 import { BrowserRouter as Router, Routes, Route, useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Gift, Sparkles, Share2, Copy, Check, ExternalLink, ArrowRight } from 'lucide-react';
+import { Gift, Sparkles, Share2, Copy, Check, ExternalLink, ArrowRight, ShoppingCart } from 'lucide-react';
 import CreatorDashboard from './components/CreatorDashboard';
 import SurpriseView from './components/SurpriseView';
+import GiftShop from './components/GiftShop';
 import Navbar from './components/Navbar';
 import PremiumService from './components/PremiumService';
 import PremiumSuccess from './components/PremiumSuccess';
@@ -38,7 +39,7 @@ function Home() {
         
         <p className="text-xl text-white/60 max-w-xl mx-auto leading-relaxed">
           Create a personalized, animated surprise website for birthdays, anniversaries, or any special occasion. 
-          Share a link, spark a smile, and create lasting memories.
+          Now with a <b>Gift Corner</b> to send real physical gifts!
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
@@ -62,19 +63,27 @@ function Home() {
           </motion.button>
         </div>
 
-        <div className="pt-20 grid grid-cols-3 gap-8 opacity-40 grayscale hover:grayscale-0 transition-all duration-500">
+        <div className="pt-20 grid grid-cols-1 md:grid-cols-4 gap-8 opacity-60 hover:opacity-100 transition-all duration-500">
           <div className="flex flex-col items-center gap-2">
-            <Gift size={24} />
+            <Gift size={24} className="text-brand" />
             <span className="text-xs font-bold uppercase tracking-widest">Personalized</span>
           </div>
           <div className="flex flex-col items-center gap-2">
-            <Sparkles size={24} />
+            <Sparkles size={24} className="text-brand" />
             <span className="text-xs font-bold uppercase tracking-widest">Animated</span>
           </div>
           <div className="flex flex-col items-center gap-2">
-            <Share2 size={24} />
+            <Share2 size={24} className="text-brand" />
             <span className="text-xs font-bold uppercase tracking-widest">Shareable</span>
           </div>
+          <motion.div 
+            whileHover={{ scale: 1.1, y: -4 }}
+            className="flex flex-col items-center gap-2 cursor-pointer"
+            onClick={() => navigate('/shop')}
+          >
+            <ShoppingCart size={24} className="text-brand" />
+            <span className="text-xs font-bold uppercase tracking-widest">Gift Corner</span>
+          </motion.div>
         </div>
       </motion.div>
     </div>
@@ -255,6 +264,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/create" element={<CreatePage />} />
+            <Route path="/shop" element={<GiftShop />} />
             <Route path="/surprise/:id" element={<SurprisePage />} />
             <Route path="/premium" element={<PremiumService />} />
             <Route path="/premium/success" element={<PremiumSuccess />} />

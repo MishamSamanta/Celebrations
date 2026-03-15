@@ -42,6 +42,8 @@ db.exec(`
     password TEXT,
     unlock_time TEXT,
     one_time_reveal INTEGER DEFAULT 0,
+    virtual_gift TEXT,
+    physical_gifts TEXT, -- JSON string array
     view_count INTEGER DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
@@ -57,6 +59,23 @@ db.exec(`
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
 `);
+
+// Migration: Add virtual_gift column if it doesn't exist
+try {
+  const columns = db.prepare("PRAGMA table_info(surprises)").all();
+  const hasVirtualGift = columns.some((col: any) => col.name === 'virtual_gift');
+  if (!hasVirtualGift) {
+    db.exec("ALTER TABLE surprises ADD COLUMN virtual_gift TEXT");
+    console.log("Migration: Added virtual_gift column to surprises table");
+  }
+  const hasPhysicalGifts = columns.some((col: any) => col.name === 'physical_gifts');
+  if (!hasPhysicalGifts) {
+    db.exec("ALTER TABLE surprises ADD COLUMN physical_gifts TEXT");
+    console.log("Migration: Added physical_gifts column to surprises table");
+  }
+} catch (error) {
+  console.error("Migration error:", error);
+}
 
 async function startServer() {
   const app = express();
@@ -134,7 +153,7 @@ async function startServer() {
     const {
       id, senderName, receiverName, relationship, occasion, message, memories,
       photos, videos, voiceMessage, music, theme, openingText,
-      finalWish, password, unlockTime, oneTimeReveal
+      finalWish, password, unlockTime, oneTimeReveal, virtualGift, physicalGifts
     } = req.body;
 
     try {
@@ -142,15 +161,16 @@ async function startServer() {
         INSERT INTO surprises (
           id, sender_name, receiver_name, relationship, occasion, message, memories,
           photos, videos, voice_message, music, theme, opening_text,
-          final_wish, password, unlock_time, one_time_reveal
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          final_wish, password, unlock_time, one_time_reveal, virtual_gift, physical_gifts
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `);
 
       stmt.run(
         id, senderName, receiverName, relationship, occasion, message, memories,
         JSON.stringify(photos || []), JSON.stringify(videos || []),
         voiceMessage, music, theme, openingText,
-        finalWish, password, unlockTime, oneTimeReveal ? 1 : 0
+        finalWish, password, unlockTime, oneTimeReveal ? 1 : 0, virtualGift,
+        JSON.stringify(physicalGifts || [])
       );
 
       res.json({ success: true, id });
@@ -175,7 +195,9 @@ async function startServer() {
       ...surprise,
       photos: JSON.parse(surprise.photos),
       videos: JSON.parse(surprise.videos),
-      oneTimeReveal: !!surprise.one_time_reveal
+      oneTimeReveal: !!surprise.one_time_reveal,
+      virtualGift: surprise.virtual_gift,
+      physicalGifts: JSON.parse(surprise.physical_gifts || '[]')
     });
   });
 

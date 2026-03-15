@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Plus, Image as ImageIcon, Music, Send, Sparkles, Trash2, Eye, Save, ChevronRight, ChevronLeft, ChevronDown, Cake, Heart, Flame, GraduationCap, TrendingUp, Star, Wand2, Loader2 } from 'lucide-react';
-import { SurpriseData, THEMES, MUSIC_OPTIONS, OCCASIONS } from '../types';
+import { Plus, Image as ImageIcon, Music, Send, Sparkles, Trash2, Eye, Save, ChevronRight, ChevronLeft, ChevronDown, Cake, Heart, Flame, GraduationCap, TrendingUp, Star, Wand2, Loader2, Flower2, Candy, Trophy, Gem, Baby, CakeSlice, ShoppingBag, ShoppingCart, CheckCircle2 } from 'lucide-react';
+import { SurpriseData, THEMES, MUSIC_OPTIONS, OCCASIONS, VIRTUAL_GIFTS, PHYSICAL_GIFTS } from '../types';
 import { generateId, cn } from '../lib/utils';
 import { GoogleGenAI } from "@google/genai";
 
 const ICON_MAP: Record<string, any> = {
-  Cake, Heart, Flame, GraduationCap, TrendingUp, Star
+  Cake, Heart, Flame, GraduationCap, TrendingUp, Star,
+  Flower2, Candy, Trophy, Gem, Baby, CakeSlice
 };
 
 interface CreatorDashboardProps {
@@ -24,6 +25,8 @@ export default function CreatorDashboard({ onGenerate }: CreatorDashboardProps) 
     photos: [],
     videos: [],
     oneTimeReveal: false,
+    virtualGift: 'flowers',
+    physicalGifts: [],
   });
 
   const updateField = (field: keyof SurpriseData, value: any) => {
@@ -84,7 +87,7 @@ export default function CreatorDashboard({ onGenerate }: CreatorDashboardProps) 
         return;
       }
     }
-    setStep(s => Math.min(s + 1, 4));
+    setStep(s => Math.min(s + 1, 5));
   };
   const prevStep = () => setStep(s => Math.max(s - 1, 1));
 
@@ -144,6 +147,19 @@ export default function CreatorDashboard({ onGenerate }: CreatorDashboardProps) 
     } finally {
       setIsEnhancing(false);
     }
+  };
+
+  const togglePhysicalGift = (giftId: string) => {
+    setFormData(prev => {
+      const current = prev.physicalGifts || [];
+      const exists = current.includes(giftId);
+      return {
+        ...prev,
+        physicalGifts: exists 
+          ? current.filter(id => id !== giftId)
+          : [...current, giftId]
+      };
+    });
   };
 
   const handleSubmit = () => {
@@ -207,7 +223,8 @@ export default function CreatorDashboard({ onGenerate }: CreatorDashboardProps) 
                   { n: 1, label: 'The Occasion', desc: 'Who & Why' },
                   { n: 2, label: 'The Narrative', desc: 'Your Words' },
                   { n: 3, label: 'The Gallery', desc: 'Visuals & Sound' },
-                  { n: 4, label: 'The Finale', desc: 'Theme & Reveal' },
+                  { n: 4, label: 'The Gift Shop', desc: 'Physical Gifts' },
+                  { n: 5, label: 'The Finale', desc: 'Theme & Reveal' },
                 ].map((s) => (
                   <motion.button
                     key={s.n}
@@ -424,6 +441,30 @@ export default function CreatorDashboard({ onGenerate }: CreatorDashboardProps) 
                       </div>
                     </div>
                     <div className="space-y-3">
+                      <label className="text-[10px] font-display font-bold text-white/30 uppercase tracking-[0.3em]">Virtual Gift</label>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        {VIRTUAL_GIFTS.map((gift) => {
+                          const GiftIcon = ICON_MAP[gift.icon];
+                          return (
+                            <button
+                              key={gift.id}
+                              onClick={() => updateField('virtualGift', gift.id)}
+                              className={cn(
+                                "flex flex-col items-center gap-3 p-4 rounded-2xl border transition-all",
+                                formData.virtualGift === gift.id 
+                                  ? "bg-brand/10 border-brand text-brand shadow-lg shadow-brand/10" 
+                                  : "bg-white/[0.02] border-white/5 text-white/40 hover:bg-white/[0.05]"
+                              )}
+                            >
+                              <GiftIcon size={24} />
+                              <span className="text-[10px] font-display font-bold uppercase tracking-wider">{gift.name}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
                       <label className="text-[10px] font-display font-bold text-white/30 uppercase tracking-[0.3em]">Shared Memories</label>
                       <textarea
                         rows={4}
@@ -509,6 +550,70 @@ export default function CreatorDashboard({ onGenerate }: CreatorDashboardProps) 
               {step === 4 && (
                 <div className="space-y-10">
                   <div className="space-y-2">
+                    <h2 className="text-4xl font-heading font-bold">The Gift Corner</h2>
+                    <p className="text-white/40 font-serif italic">Add real physical gifts to be delivered with your surprise card.</p>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    {PHYSICAL_GIFTS.map((gift) => {
+                      const isSelected = formData.physicalGifts?.includes(gift.id);
+                      return (
+                        <motion.div
+                          key={gift.id}
+                          whileHover={{ y: -4 }}
+                          className={cn(
+                            "group relative glass-card p-6 border transition-all cursor-pointer",
+                            isSelected ? "border-brand bg-brand/5" : "border-white/5 hover:border-white/20"
+                          )}
+                          onClick={() => togglePhysicalGift(gift.id)}
+                        >
+                          <div className="flex gap-6">
+                            <div className="w-28 h-28 rounded-2xl overflow-hidden flex-shrink-0 border border-white/10">
+                              <img src={gift.image} alt={gift.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                            </div>
+                            <div className="flex-1 space-y-2">
+                              <div className="flex justify-between items-start">
+                                <span className="text-[10px] font-display font-bold text-brand uppercase tracking-wider">{gift.category}</span>
+                                {isSelected && <CheckCircle2 size={18} className="text-brand" />}
+                              </div>
+                              <h3 className="font-heading font-bold text-xl text-white group-hover:text-brand transition-colors">{gift.name}</h3>
+                              <p className="text-xs text-white/40 line-clamp-2 font-serif italic">{gift.description}</p>
+                              <div className="pt-3 flex justify-between items-center">
+                                <span className="font-mono text-brand font-bold text-lg">${gift.price.toFixed(2)}</span>
+                                <div className={cn(
+                                  "p-2 rounded-xl transition-all",
+                                  isSelected ? "bg-brand text-white shadow-lg shadow-brand/20" : "bg-white/5 text-white/20 group-hover:bg-white/10"
+                                )}>
+                                  <ShoppingCart size={16} />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+
+                  <div className="p-8 rounded-[2.5rem] bg-brand/5 border border-brand/20 flex items-center gap-6">
+                    <div className="w-16 h-16 rounded-2xl bg-brand/20 flex items-center justify-center text-brand shadow-inner">
+                      <ShoppingBag size={32} />
+                    </div>
+                    <div>
+                      <h4 className="font-heading font-bold text-2xl text-white">Gift Total: ${
+                        (formData.physicalGifts || []).reduce((acc, id) => {
+                          const gift = PHYSICAL_GIFTS.find(g => g.id === id);
+                          return acc + (gift?.price || 0);
+                        }, 0).toFixed(2)
+                      }</h4>
+                      <p className="text-sm text-white/40 font-serif italic">These gifts will be processed and shipped to the receiver along with your digital card.</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {step === 5 && (
+                <div className="space-y-10">
+                  <div className="space-y-2">
                     <h2 className="text-4xl font-heading font-bold">The Finale</h2>
                     <p className="text-white/40 font-serif italic">Final touches for the perfect reveal</p>
                   </div>
@@ -577,7 +682,7 @@ export default function CreatorDashboard({ onGenerate }: CreatorDashboardProps) 
                   <ChevronLeft size={20} />
                   <span className="font-display font-bold uppercase tracking-widest text-xs">Back</span>
                 </motion.button>
-                {step < 4 ? (
+                {step < 5 ? (
                   <motion.button
                     whileHover={{ scale: 1.05, x: 4 }}
                     whileTap={{ scale: 0.95 }}

@@ -1,9 +1,13 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import confetti from 'canvas-confetti';
-import { Gift, Heart, Music, Volume2, VolumeX, ChevronRight, Calendar, MessageCircle, Star, Sparkles } from 'lucide-react';
-import { SurpriseData } from '../types';
+import { Gift, Heart, Music, Volume2, VolumeX, ChevronRight, Calendar, MessageCircle, Star, Sparkles, Flower2, Candy, Trophy, Gem, Baby, CakeSlice, ShoppingBag, Package, Truck } from 'lucide-react';
+import { SurpriseData, VIRTUAL_GIFTS, PHYSICAL_GIFTS } from '../types';
 import { cn } from '../lib/utils';
+
+const GIFT_ICON_MAP: Record<string, any> = {
+  Flower2, Candy, Trophy, Gem, Baby, CakeSlice
+};
 
 interface SurpriseViewProps {
   data: SurpriseData;
@@ -235,6 +239,104 @@ export default function SurpriseView({ data }: SurpriseViewProps) {
                   </motion.div>
                 </div>
               </section>
+
+              {/* Virtual Gift Section */}
+              {data.virtualGift && (
+                <section className="text-center space-y-12 py-20">
+                  <div className="flex items-center gap-8">
+                    <div className="h-px flex-1 bg-gradient-to-r from-transparent to-white/10" />
+                    <h2 className="text-sm font-display font-bold uppercase tracking-[0.4em] text-white/30">A Special Token</h2>
+                    <div className="h-px flex-1 bg-gradient-to-l from-transparent to-white/10" />
+                  </div>
+                  
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    className="relative inline-block"
+                  >
+                    <div className="absolute inset-[-60px] bg-brand/20 blur-[100px] rounded-full animate-pulse" />
+                    <div className="relative glass-card p-12 md:p-20 rounded-[3rem] border-brand/30 flex flex-col items-center gap-8">
+                      <motion.div
+                        animate={{ 
+                          y: [0, -20, 0],
+                          rotate: [0, 5, -5, 0],
+                          scale: [1, 1.1, 1]
+                        }}
+                        transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+                        className="p-8 bg-brand/10 rounded-full border border-brand/20 shadow-2xl shadow-brand/20"
+                      >
+                        {(() => {
+                          const gift = VIRTUAL_GIFTS.find(g => g.id === data.virtualGift);
+                          const Icon = gift ? GIFT_ICON_MAP[gift.icon] : Gift;
+                          return <Icon size={80} className="text-brand" />;
+                        })()}
+                      </motion.div>
+                      <div className="space-y-4">
+                        <h3 className="text-4xl md:text-6xl font-heading font-bold text-white">
+                          {VIRTUAL_GIFTS.find(g => g.id === data.virtualGift)?.name}
+                        </h3>
+                        <p className="text-white/40 font-display uppercase tracking-[0.2em] text-sm">A digital token of my affection</p>
+                      </div>
+                    </div>
+                  </motion.div>
+                </section>
+              )}
+
+              {/* Physical Gift Corner - Amazon Style */}
+              {data.physicalGifts && data.physicalGifts.length > 0 && (
+                <section className="space-y-16">
+                  <div className="flex items-center gap-8">
+                    <div className="h-px flex-1 bg-gradient-to-r from-transparent to-white/10" />
+                    <h2 className="text-sm font-display font-bold uppercase tracking-[0.4em] text-white/30">The Gift Corner</h2>
+                    <div className="h-px flex-1 bg-gradient-to-l from-transparent to-white/10" />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    {data.physicalGifts.map((giftId, i) => {
+                      const gift = PHYSICAL_GIFTS.find(g => g.id === giftId);
+                      if (!gift) return null;
+                      return (
+                        <motion.div
+                          key={giftId}
+                          initial={{ opacity: 0, x: i % 2 === 0 ? -30 : 30 }}
+                          whileInView={{ opacity: 1, x: 0 }}
+                          viewport={{ once: true }}
+                          className="glass-card p-8 flex gap-8 items-center border-white/5 group hover:border-brand/30 transition-all duration-500"
+                        >
+                          <div className="w-32 h-32 rounded-3xl overflow-hidden flex-shrink-0 border border-white/10">
+                            <img src={gift.image} alt={gift.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                          </div>
+                          <div className="flex-1 space-y-3">
+                            <div className="flex items-center gap-2 text-brand">
+                              <Package size={14} />
+                              <span className="text-[10px] font-display font-bold uppercase tracking-widest">Physical Gift</span>
+                            </div>
+                            <h3 className="text-2xl font-heading font-bold text-white">{gift.name}</h3>
+                            <p className="text-sm text-white/40 font-serif italic line-clamp-2">{gift.description}</p>
+                            <div className="flex items-center gap-4 pt-2">
+                              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                                <Truck size={12} />
+                                <span className="text-[10px] font-display font-bold uppercase tracking-wider">Out for Delivery</span>
+                              </div>
+                            </div>
+                          </div>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+
+                  <div className="max-w-2xl mx-auto p-8 rounded-[2.5rem] bg-white/[0.02] border border-white/5 text-center space-y-4">
+                    <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-brand/10 text-brand border border-brand/20 mb-2">
+                      <ShoppingBag size={14} />
+                      <span className="text-[10px] font-display font-bold uppercase tracking-widest">Gift Registry</span>
+                    </div>
+                    <p className="text-white/60 font-serif italic text-lg">
+                      "I've picked out these special items just for you. They're on their way to your doorstep to make this moment even more memorable."
+                    </p>
+                  </div>
+                </section>
+              )}
 
               {/* Final Celebration - Grand Finale */}
               <section className="text-center py-40 space-y-16 relative">

@@ -48,6 +48,46 @@ export const PHYSICAL_GIFTS: PhysicalGift[] = [
     description: 'Freshly picked roses delivered in a beautiful wrap.'
   },
   {
+    id: 'sunflower-bundle',
+    name: 'Golden Sunflowers',
+    price: 32.00,
+    image: 'https://images.unsplash.com/photo-1597848212624-a19eb35e2651?auto=format&fit=crop&q=80&w=400',
+    category: 'Flowers',
+    description: 'Bright and cheerful sunflowers to light up any room.'
+  },
+  {
+    id: 'tulip-garden',
+    name: 'Spring Tulip Mix',
+    price: 38.50,
+    image: 'https://images.unsplash.com/photo-1520323232427-6b6249f9080d?auto=format&fit=crop&q=80&w=400',
+    category: 'Flowers',
+    description: 'A vibrant assortment of colorful spring tulips.'
+  },
+  {
+    id: 'lily-white',
+    name: 'Elegant White Lilies',
+    price: 42.00,
+    image: 'https://images.unsplash.com/photo-1508784411316-02b8cd4d3a3a?auto=format&fit=crop&q=80&w=400',
+    category: 'Flowers',
+    description: 'Pure and sophisticated white lilies for a touch of class.'
+  },
+  {
+    id: 'orchid-potted',
+    name: 'Purple Phalaenopsis Orchid',
+    price: 55.00,
+    image: 'https://images.unsplash.com/photo-1566117777910-597607933281?auto=format&fit=crop&q=80&w=400',
+    category: 'Flowers',
+    description: 'A stunning, long-lasting potted orchid in a ceramic vase.'
+  },
+  {
+    id: 'wildflower-mason',
+    name: 'Wildflower Mason Jar',
+    price: 28.00,
+    image: 'https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&q=80&w=400',
+    category: 'Flowers',
+    description: 'Rustic and charming mixed wildflowers in a reusable jar.'
+  },
+  {
     id: 'chocolate-box',
     name: 'Artisan Truffle Box',
     price: 24.50,
